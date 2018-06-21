@@ -5,6 +5,8 @@ import AngleDown from 'react-icons/lib/fa/angle-down'
 import posts from './posts'
 import './App.css';
 
+
+
 class App extends Component {
   constructor(){
     super()
@@ -12,8 +14,10 @@ class App extends Component {
       buttonOrder: 'primary',
       posts: posts,
     }
+    
     this.handleLike = this.handleLike.bind(this)
     this.handleNotLike = this.handleNotLike.bind(this)
+    this.handleOperation = this.handleOperation.bind(this)
   }
   render() {
     return (
@@ -46,11 +50,11 @@ class App extends Component {
                 </Col>
                 <Col xs={1}>
                   <h4 className='text-center'> 
-                  <AngleUp className='text-primary' onClick={this.handleLike} />
+                  <AngleUp value={index} className='text-primary' onClick={this.handleLike.bind(this, index)} />
                   <br/>
                   {post.votes}
                   <br/>
-                  <AngleDown className='text-primary' onClick={this.handleNotLike} />
+                  <AngleDown className='text-primary' onClick={this.handleNotLike.bind(this, index)} />
                   </h4>
                 </Col>
                 <Col xs={7}>      
@@ -69,39 +73,33 @@ class App extends Component {
     );
   }
 
-  handleLike(){
-    this.setState({
-      posts: [
-        ...posts.slice(0,1),
-        {
-          id: this.state.posts[1].id,
-          title: this.state.posts[1].title,
-          description: this.state.posts[1].description,
-          url: this.state.posts[1].url,
-          votes: this.state.posts[1].votes + 1,
-          writer_avatar_url: this.state.posts[1].writer_avatar_url,
-          post_image_url: this.state.posts[1].post_image_url,
-        }
-        ,
-        ...posts.slice(1 + 1)
-      ]
-    })
+  handleLike(i){
+    this.handleOperation(i,'sum')
   }
-  handleNotLike(){
+  handleNotLike(i){
+    this.handleOperation(i,'res')
+  }
+  handleOperation(i,operation){
+    let votes = ''
+    if(operation==='sum'){
+      votes = this.state.posts[i].votes + 1
+    }else{
+      votes = this.state.posts[i].votes - 1
+    }
     this.setState({
       posts: [
-        ...posts.slice(0,1),
+        ...posts.slice(0,i),
         {
-          id: this.state.posts[1].id,
-          title: this.state.posts[1].title,
-          description: this.state.posts[1].description,
-          url: this.state.posts[1].url,
-          votes: this.state.posts[1].votes - 1,
-          writer_avatar_url: this.state.posts[1].writer_avatar_url,
-          post_image_url: this.state.posts[1].post_image_url,
+          id: this.state.posts[i].id,
+          title: this.state.posts[i].title,
+          description: this.state.posts[i].description,
+          url: this.state.posts[i].url,
+          votes: votes,
+          writer_avatar_url: this.state.posts[i].writer_avatar_url,
+          post_image_url: this.state.posts[i].post_image_url,
         }
         ,
-        ...posts.slice(1 + 1)
+        ...posts.slice(i + 1)
       ]
     })
   }
