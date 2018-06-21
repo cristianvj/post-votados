@@ -11,14 +11,26 @@ class App extends Component {
   constructor(){
     super()
     this.state={
-      buttonOrder: 'primary',
-      posts: posts,
+      buttonAscendente: 'default',
+      buttonDescendente: 'primary',
+      posts: [],
     }
     
     this.handleLike = this.handleLike.bind(this)
     this.handleNotLike = this.handleNotLike.bind(this)
     this.handleOperation = this.handleOperation.bind(this)
+
   }
+
+  componentWillMount(){
+    let orderPosts = posts.sort(function (a, b) {
+      return a.votes - b.votes;
+    })
+    this.setState({
+      posts: orderPosts
+    })
+  }
+
   render() {
     return (
       <Grid>
@@ -31,7 +43,10 @@ class App extends Component {
         <hr/>
         <Row>
           <Col md={6} mdOffset={2}>
-            <h4>Orden:</h4> <Button>Ascendente</Button> <Button bsStyle={this.state.buttonOrder}>Descendente</Button>
+            <h4>Orden:</h4> 
+            <Button bsStyle={this.state.buttonAscendente}>Ascendente</Button>
+            &nbsp;
+            <Button bsStyle={this.state.buttonDescendente}>Descendente</Button>
           </Col>
         </Row>
         <br/>
@@ -86,8 +101,7 @@ class App extends Component {
     }else{
       votes = this.state.posts[i].votes - 1
     }
-    this.setState({
-      posts: [
+    let postsOrder = [
         ...posts.slice(0,i),
         {
           id: this.state.posts[i].id,
@@ -97,10 +111,14 @@ class App extends Component {
           votes: votes,
           writer_avatar_url: this.state.posts[i].writer_avatar_url,
           post_image_url: this.state.posts[i].post_image_url,
-        }
-        ,
+        },
         ...posts.slice(i + 1)
       ]
+
+    this.setState({
+      posts: postsOrder.sort(function (a, b) {
+              return a.votes - b.votes;
+            })
     })
   }
 }
