@@ -11,14 +11,14 @@ class App extends Component {
   constructor(){
     super()
     this.state={
-      buttonAscendente: 'default',
-      buttonDescendente: 'primary',
+      order: true,
       posts: [],
     }
     
     this.handleLike = this.handleLike.bind(this)
     this.handleNotLike = this.handleNotLike.bind(this)
     this.handleOperation = this.handleOperation.bind(this)
+    this.handleOrder = this.handleOrder.bind(this)
 
   }
 
@@ -44,9 +44,19 @@ class App extends Component {
         <Row>
           <Col md={6} mdOffset={2}>
             <h4>Orden:</h4> 
-            <Button bsStyle={this.state.buttonAscendente}>Ascendente</Button>
+            <Button 
+              bsStyle={(this.state.order)?"primary":"default"}
+              onClick={()=>this.handleOrder(true)}              
+            >
+              Ascendente
+            </Button>
             &nbsp;
-            <Button bsStyle={this.state.buttonDescendente}>Descendente</Button>
+            <Button 
+              bsStyle={(this.state.order)?"default":"primary"}
+              onClick={()=>this.handleOrder(false)}
+            >
+              Descendente
+            </Button>
           </Col>
         </Row>
         <br/>
@@ -65,11 +75,11 @@ class App extends Component {
                 </Col>
                 <Col xs={1}>
                   <h4 className='text-center'> 
-                  <AngleUp value={index} className='text-primary' onClick={this.handleLike.bind(this, index)} />
+                  <AngleUp value={index} className='text-primary' onClick={()=>this.handleLike(index)} />
                   <br/>
                   {post.votes}
                   <br/>
-                  <AngleDown className='text-primary' onClick={this.handleNotLike.bind(this, index)} />
+                  <AngleDown className='text-primary' onClick={()=>this.handleNotLike(index)} />
                   </h4>
                 </Col>
                 <Col xs={7}>      
@@ -91,36 +101,56 @@ class App extends Component {
   handleLike(i){
     this.handleOperation(i,'sum')
   }
+
   handleNotLike(i){
     this.handleOperation(i,'res')
   }
+
   handleOperation(i,operation){
-    let votes = ''
+
+    let tmpPosts = this.state.posts
+    let orderPosts = ''
+
     if(operation==='sum'){
-      votes = this.state.posts[i].votes + 1
-    }else{
-      votes = this.state.posts[i].votes - 1
+      tmpPosts[i].votes = tmpPosts[i].votes + 1;
+    }else if(operation==='res'){
+      tmpPosts[i].votes = tmpPosts[i].votes - 1;
     }
-    let postsOrder = [
-        ...posts.slice(0,i),
-        {
-          id: this.state.posts[i].id,
-          title: this.state.posts[i].title,
-          description: this.state.posts[i].description,
-          url: this.state.posts[i].url,
-          votes: votes,
-          writer_avatar_url: this.state.posts[i].writer_avatar_url,
-          post_image_url: this.state.posts[i].post_image_url,
-        },
-        ...posts.slice(i + 1)
-      ]
+
+    if(this.state.order){
+      orderPosts = posts.sort(function (a, b) {
+        return a.votes - b.votes;
+      })
+    }else{
+      orderPosts = posts.sort(function (a, b) {
+        return b.votes - a.votes;
+      })
+    }
 
     this.setState({
-      posts: postsOrder.sort(function (a, b) {
-              return a.votes - b.votes;
-            })
+     posts: tmpPosts
     })
+
   }
+
+   handleOrder(str){
+    let order = true
+    let posts = this.state.posts
+    if(!str){
+      order = false
+      posts = posts.sort(function (a, b) {
+        return b.votes - a.votes;
+      })
+    }else{
+      posts = posts.sort(function (a, b) {
+        return a.votes - b.votes;
+      })
+    }
+    this.setState({
+      order: order,
+      posts: posts
+    })
+   }
 }
 
 export default App;
