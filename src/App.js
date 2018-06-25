@@ -19,13 +19,12 @@ class App extends Component {
     this.handleNotLike = this.handleNotLike.bind(this)
     this.handleOperation = this.handleOperation.bind(this)
     this.handleOrder = this.handleOrder.bind(this)
+    this.order = this.order.bind(this)
 
   }
 
   componentWillMount(){
-    let orderPosts = posts.sort(function (a, b) {
-      return a.votes - b.votes;
-    })
+    let orderPosts = this.order(posts,true)
     this.setState({
       posts: orderPosts
     })
@@ -95,15 +94,15 @@ class App extends Component {
           })
         }
       </Grid>
-    );
+    )
   }
 
   handleLike(i){
-    this.handleOperation(i,'sum')
+    this.handleOperation(i,false)
   }
 
   handleNotLike(i){
-    this.handleOperation(i,'res')
+    this.handleOperation(i,true)
   }
 
   handleOperation(i,operation){
@@ -111,9 +110,9 @@ class App extends Component {
     let tmpPosts = this.state.posts
     let orderPosts = ''
 
-    if(operation==='sum'){
+    if(!operation){
       tmpPosts[i].votes = tmpPosts[i].votes + 1;
-    }else if(operation==='res'){
+    }else{
       tmpPosts[i].votes = tmpPosts[i].votes - 1;
     }
 
@@ -136,21 +135,31 @@ class App extends Component {
    handleOrder(str){
     let order = true
     let posts = this.state.posts
+
     if(!str){
       order = false
-      posts = posts.sort(function (a, b) {
-        return b.votes - a.votes;
-      })
+      posts = this.order(posts,false)
+      console.log('devuelve: '+posts)
     }else{
-      posts = posts.sort(function (a, b) {
-        return a.votes - b.votes;
-      })
+      posts = posts = this.order(posts,true)
     }
     this.setState({
       order: order,
       posts: posts
     })
    }
+
+  order(posts, ope){
+    return(
+      posts.sort(function (a, b) {
+        if(!ope){
+          return b.votes - a.votes
+        }else{
+          return a.votes - b.votes
+        }
+      })
+    )
+  }
 }
 
 export default App;
