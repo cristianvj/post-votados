@@ -117,13 +117,9 @@ class App extends Component {
     }
 
     if(this.state.order){
-      orderPosts = posts.sort(function (a, b) {
-        return a.votes - b.votes;
-      })
+      this.order(posts,true)
     }else{
-      orderPosts = posts.sort(function (a, b) {
-        return b.votes - a.votes;
-      })
+      this.order(posts,false)
     }
 
     this.setState({
