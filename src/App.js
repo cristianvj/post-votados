@@ -137,11 +137,12 @@ class App extends Component {
       posts = this.order(posts,false)
       console.log('devuelve: '+posts)
     }else{
-      posts = posts = this.order(posts,true)
+      posts = this.order(posts,true)
     }
+
     this.setState({
-      order: order,
-      posts: posts
+      order,
+      posts
     })
    }
 
@@ -156,6 +157,7 @@ class App extends Component {
       })
     )
   }
+
 }
 
 export default App;
