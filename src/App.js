@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
-import {Grid, Row, Col, Media, Button} from 'react-bootstrap'
+import React, { Component } from 'react'
+import {Grid, Row, Col, Media} from 'react-bootstrap'
 import AngleUp from 'react-icons/lib/fa/angle-up'
 import AngleDown from 'react-icons/lib/fa/angle-down'
+import OrderButtons from './components/order-buttons'
+import store from './store'
 import posts from './posts'
 import './App.css';
 
@@ -11,14 +13,29 @@ class App extends Component {
   constructor(){
     super()
     this.state={
-      buttonOrder: 'primary',
-      posts: posts,
+      order: true,
+      posts: [],
     }
     
     this.handleLike = this.handleLike.bind(this)
     this.handleNotLike = this.handleNotLike.bind(this)
     this.handleOperation = this.handleOperation.bind(this)
+    this.handleOrder = this.handleOrder.bind(this)
+    this.order = this.order.bind(this)
+
   }
+
+  
+    componentWillMount(){
+      console.log('store: '+store.getState().order)
+      console.log('state: '+this.state.order)
+      let orderPosts = this.order(posts,true)
+      this.setState({
+        posts: orderPosts
+      })
+    }
+  
+
   render() {
     return (
       <Grid>
@@ -31,7 +48,8 @@ class App extends Component {
         <hr/>
         <Row>
           <Col md={6} mdOffset={2}>
-            <h4>Orden:</h4> <Button>Ascendente</Button> <Button bsStyle={this.state.buttonOrder}>Descendente</Button>
+            <h4>Orden:</h4> 
+            <OrderButtons order={this.state.order}/>
           </Col>
         </Row>
         <br/>
@@ -50,11 +68,11 @@ class App extends Component {
                 </Col>
                 <Col xs={1}>
                   <h4 className='text-center'> 
-                  <AngleUp value={index} className='text-primary' onClick={this.handleLike.bind(this, index)} />
+                  <AngleUp value={index} className='text-primary' onClick={()=>this.handleLike(index)} />
                   <br/>
                   {post.votes}
                   <br/>
-                  <AngleDown className='text-primary' onClick={this.handleNotLike.bind(this, index)} />
+                  <AngleDown className='text-primary' onClick={()=>this.handleNotLike(index)} />
                   </h4>
                 </Col>
                 <Col xs={7}>      
@@ -70,39 +88,70 @@ class App extends Component {
           })
         }
       </Grid>
-    );
+    )
   }
 
   handleLike(i){
-    this.handleOperation(i,'sum')
+    this.handleOperation(i,false)
   }
+
   handleNotLike(i){
-    this.handleOperation(i,'res')
+    this.handleOperation(i,true)
   }
+
   handleOperation(i,operation){
-    let votes = ''
-    if(operation==='sum'){
-      votes = this.state.posts[i].votes + 1
+
+    let tmpPosts = this.state.posts
+    let orderPosts = ''
+
+    if(!operation){
+      tmpPosts[i].votes = tmpPosts[i].votes + 1;
     }else{
-      votes = this.state.posts[i].votes - 1
+      tmpPosts[i].votes = tmpPosts[i].votes - 1;
     }
+
+    if(this.state.order){
+      this.order(posts,true)
+    }else{
+      this.order(posts,false)
+    }
+
     this.setState({
-      posts: [
-        ...posts.slice(0,i),
-        {
-          id: this.state.posts[i].id,
-          title: this.state.posts[i].title,
-          description: this.state.posts[i].description,
-          url: this.state.posts[i].url,
-          votes: votes,
-          writer_avatar_url: this.state.posts[i].writer_avatar_url,
-          post_image_url: this.state.posts[i].post_image_url,
-        }
-        ,
-        ...posts.slice(i + 1)
-      ]
+     posts: tmpPosts
     })
+
   }
+
+   handleOrder(str){
+    let order = true
+    let posts = this.state.posts
+
+    if(!str){
+      order = false
+      posts = this.order(posts,false)
+      console.log('devuelve: '+posts)
+    }else{
+      posts = this.order(posts,true)
+    }
+
+    this.setState({
+      order,
+      posts
+    })
+   }
+
+  order(posts, ope){
+    return(
+      posts.sort(function (a, b) {
+        if(!ope){
+          return b.votes - a.votes
+        }else{
+          return a.votes - b.votes
+        }
+      })
+    )
+  }
+
 }
 
 export default App;
