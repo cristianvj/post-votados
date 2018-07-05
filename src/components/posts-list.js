@@ -102,7 +102,7 @@ class PostsList extends Component{
     this.setState({
      posts: tmpPosts
     })
-
+    
   }
 
   order(posts, ope){
