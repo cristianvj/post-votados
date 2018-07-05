@@ -3,18 +3,17 @@ import {Button} from 'react-bootstrap'
 import store from '../store'
 
 class OrderButtons extends Component{
-  constructor(props){
-    super(props)
+  
+  constructor(){
+    super()
     this.state = {
-      order: props.order
+      order: true
     }
-      console.log('estado desde props: '+ props.order)
       store.subscribe(() =>
         this.setState({
           order: store.getState().order
         })
       )
-    
     this.handleOrder = this.handleOrder.bind(this)
   }
 
@@ -39,32 +38,10 @@ class OrderButtons extends Component{
   }
 
   handleOrder(order){
-    //let order = true
-    //let posts = this.state.posts
-
-    //if(!str){
-     //order = false
-     //posts = this.order(posts,false)
-     //console.log('devuelve: '+posts)
-    //}else{
-     //posts = this.order(posts,true)
-    //}
-
-    /*this.setState({
-     order,
-     posts
-    })*/
-
-    /*this.setState({
-      order
-    })*/
-
-    console.log('despachando: '+order)
     store.dispatch({
       type: 'CHANGE_ORDER',
       order
     })
-
   }
 
 }
